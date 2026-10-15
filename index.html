@@ -18,12 +18,12 @@ button.secondary{background:white;color:var(--dark)}button.secondary:hover:not(:
 .muted{color:#60777a;font-size:.87rem}.status{min-height:22px;margin:14px 0 0;color:var(--dark)}
 .hidden{display:none!important}.center{text-align:center}
 #clock{font-size:1.8rem;font-weight:bold;font-variant-numeric:tabular-nums;color:var(--dark)}
-#readingText{white-space:pre-wrap;line-height:1.85;font-size:1.3rem;min-height:230px;text-align:left;margin:24px auto;max-width:850px}
+#readingText{white-space:pre-wrap;line-height:1.75;font-size:1.3rem;height:clamp(270px,47vh,390px);overflow-y:auto;overscroll-behavior:contain;text-align:left;margin:16px auto;max-width:850px;padding:18px 24px;background:#fbfefe;border:1px solid var(--border);border-radius:12px;scroll-behavior:smooth}
 #nextChunk{font-size:1.2rem;min-width:170px;padding:16px 25px}#startReading{font-size:1.2rem;padding:15px 32px}
 .result{font-size:1.3rem;color:var(--dark)}table{border-collapse:collapse;width:100%;margin:16px 0}th,td{border-bottom:1px solid var(--border);padding:11px;text-align:left}th{color:var(--dark)}
 .actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:22px}
 footer{text-align:center;color:#60777a;font-size:.8rem;padding:20px}
-@media(max-width:650px){.setupTop{grid-template-columns:1fr}.challengeArea{grid-column:auto}.panel{padding:15px}#readingText{font-size:1.12rem}.line{gap:12px}}
+@media(max-width:650px){#readingText{height:clamp(245px,43vh,350px);padding:14px 16px}.setupTop{grid-template-columns:1fr}.challengeArea{grid-column:auto}.panel{padding:15px}#readingText{font-size:1.12rem}.line{gap:12px}}
 @page{size:A4;margin:16mm}
 @media print{header,footer,#setup,#reading,#result .actions,.noPrint{display:none!important}body{background:white}main{padding:0}#result{display:block!important;box-shadow:none;border:0;padding:0}h2{font-size:16pt}table{font-size:10pt}th,td{padding:8px}}
 </style></head><body>
@@ -81,7 +81,7 @@ $('choose').onclick=()=>{const n=Number($('number').value),r=corpus.find(x=>x.nu
 $('searchText').onclick=()=>{const k=$('keywords').value;if(!k){alert('Choisis un mot-clé.');return}choose(corpus.filter(r=>matchKeyword(r,k)),'Mot-clé : '+k)};
 function showSection(id){['setup','reading','result'].forEach(x=>$(x).classList.toggle('hidden',x!==id))}
 function tokenize(s){return [...s.matchAll(/\S+/g)].map(m=>({value:m[0],start:m.index,end:m.index+m[0].length}))}
-function reveal(){if(phase!=='running')return;revealed=Math.min(words.length,revealed+10);const w=words[revealed-1];$('readingText').textContent=queue[position].texte.slice(0,w.end);if(revealed>=words.length){finish('Texte terminé avant une minute.')} }
+function reveal(){if(phase!=='running')return;revealed=Math.min(words.length,revealed+10);const w=words[revealed-1];$('readingText').textContent=queue[position].texte.slice(0,w.end);const area=$('readingText');area.scrollTo({top:area.scrollHeight-area.clientHeight,behavior:'smooth'});if(revealed>=words.length){finish('Texte terminé avant une minute.')} }
 function tick(){if(phase!=='running')return;const elapsed=Math.min(60000,performance.now()-start),cs=Math.floor(elapsed/10);$('clock').textContent='00:'+String(Math.floor(cs/100)).padStart(2,'0')+','+String(cs%100).padStart(2,'0');if(elapsed>=60000){finish('Une minute écoulée.');return}frame=requestAnimationFrame(tick)}
 function startReading(){if(phase!=='ready')return;phase='running';start=performance.now();$('startReading').classList.add('hidden');$('nextChunk').classList.remove('hidden');$('readingNotice').textContent='Appuie sur Espace ou sur Suite pour afficher dix mots supplémentaires.';reveal();tick()}
 function prepareText(){phase='ready';revealed=0;const r=queue[position];words=tokenize(r.texte);$('progress').textContent='Texte '+(position+1)+' sur '+count+' · Difficulté '+(r.etoiles||'?')+'/12';$('readingTitle').textContent=r.titre;$('readingText').textContent='';$('clock').textContent='00:00,00';$('startReading').classList.remove('hidden');$('nextChunk').classList.add('hidden');$('readingNotice').textContent='Le chronomètre et les dix premiers mots apparaîtront au démarrage.';showSection('reading')}
