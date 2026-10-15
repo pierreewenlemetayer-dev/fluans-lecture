@@ -31,7 +31,7 @@ button.secondary{background:white;color:var(--dark)}button.secondary:hover:not(:
 <header><h1>Fluañs</h1><p class="subtitle">Mesurer et travailler sa vitesse de lecture</p></header>
 <main>
 <section class="panel" id="setup">
-<div class="setupTop"><div class="field"><label for="student">Nom / prénom (facultatif)</label><input id="student" type="text" maxlength="60" placeholder="Nom / prénom"></div><div class="challengeArea"><h2>Choisir un défi</h2><div class="challenge" id="challenge"><button type="button" data-count="1" class="active">1 texte</button><button type="button" data-count="3" >3 textes</button><button type="button" data-count="5" >5 textes</button></div></div></div>
+<div class="setupTop"><div class="field"><input id="student" type="text" maxlength="60" placeholder="Nom / prénom (facultatif)" aria-label="Nom / prénom (facultatif)"></div><div class="challengeArea"><h2>Choisir un défi</h2><div class="challenge" id="challenge"><button type="button" data-count="1" class="active">1 texte</button><button type="button" data-count="3" >3 textes</button><button type="button" data-count="5" >5 textes</button></div></div></div>
 <div class="difficultyArea"><h2>Choisir la difficulté des textes</h2><div id="difficultyPicker" class="stars" role="group" aria-label="Choisir la difficulté des textes"></div></div>
 <div class="actions"><button id="prepare" disabled>Démarrer</button></div>
 <p id="load" class="muted hidden" role="status" aria-live="polite"></p>
