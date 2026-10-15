@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fluañs – Mesurer et travailler sa vitesse de lecture</title>
+<style>
+:root{--accent:#168c91;--dark:#11676c;--light:#e9f7f6;--border:#c6e1df;--text:#24383a}*{box-sizing:border-box}
+body{margin:0;background:#f5f9f9;color:var(--text);font:16px Verdana,Arial,sans-serif}
+header{text-align:center;padding:32px 15px 20px}h1{font:700 clamp(3rem,7vw,4.5rem) Georgia,serif;color:var(--dark);margin:0}
+.subtitle{font:italic 1.2rem Georgia,serif;color:#527477;margin:7px 0}main{max-width:1040px;margin:auto;padding:10px 16px 40px}
+.panel{background:white;border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:20px;box-shadow:0 2px 12px #12595b0b}
+h2{font-size:1.15rem;color:var(--dark);margin:0 0 16px}.line{display:flex;flex-wrap:wrap;align-items:end;gap:16px}
+.field{display:grid;gap:7px;min-width:130px}label{font-size:.9rem;color:#476669}select,input,button{font:inherit;border-radius:8px;padding:11px;border:1px solid #a6c9c7}
+input[type=number]{width:110px}input[type=text]{max-width:280px}button{cursor:pointer;background:var(--accent);color:white;border-color:var(--accent);font-weight:bold}button:hover:not(:disabled){background:var(--dark)}button:disabled{opacity:.45;cursor:default}
+button.secondary{background:white;color:var(--dark)}button.secondary:hover:not(:disabled){background:var(--light)}
+.challenge button.active,.stars button.active{background:var(--dark);color:white}
+.challenge{display:flex;gap:9px;flex-wrap:wrap}.challenge button{min-width:65px}
+.stars{display:flex;flex-wrap:wrap;gap:2px}.stars button{background:transparent;border:0;color:#c29224;font-size:1.9rem;padding:1px 5px}
+.stars button:hover:not(:disabled){background:var(--light);color:#986c0e}.stars button.active{border-radius:6px}
+.muted{color:#60777a;font-size:.87rem}.status{min-height:22px;margin:14px 0 0;color:var(--dark)}
+.hidden{display:none!important}.center{text-align:center}
+#clock{font-size:1.8rem;font-weight:bold;font-variant-numeric:tabular-nums;color:var(--dark)}
+#readingText{white-space:pre-wrap;line-height:1.85;font-size:1.3rem;min-height:230px;text-align:left;margin:24px auto;max-width:850px}
+#nextChunk{font-size:1.2rem;min-width:170px;padding:16px 25px}#startReading{font-size:1.2rem;padding:15px 32px}
+.result{font-size:1.3rem;color:var(--dark)}table{border-collapse:collapse;width:100%;margin:16px 0}th,td{border-bottom:1px solid var(--border);padding:11px;text-align:left}th{color:var(--dark)}
+.actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:22px}
+footer{text-align:center;color:#60777a;font-size:.8rem;padding:20px}
+@media(max-width:650px){.panel{padding:15px}#readingText{font-size:1.12rem}.line{gap:12px}}
+@page{size:A4;margin:16mm}
+@media print{header,footer,#setup,#reading,#result .actions,.noPrint{display:none!important}body{background:white}main{padding:0}#result{display:block!important;box-shadow:none;border:0;padding:0}h2{font-size:16pt}table{font-size:10pt}th,td{padding:8px}}
+</style></head><body>
+<header><h1>Fluañs</h1><p class="subtitle">Mesurer et travailler sa vitesse de lecture</p></header>
+<main>
+<section class="panel" id="setup">
+<h2>Choisir un défi</h2><div class="challenge" id="challenge"><button type="button" data-count="1" class="active">1 texte</button><button type="button" data-count="3" >3 textes</button><button type="button" data-count="5" >5 textes</button><button type="button" data-count="10" >10 textes</button></div>
+<p class="muted">Chaque texte est lu pendant une minute. Les mots apparaissent par groupes de dix.</p>
+<h2>Choisir les textes</h2>
+<div class="line">
+<div class="field"><label>Découvrir un texte</label><button id="random" type="button" class="secondary">Texte au hasard</button></div>
+<div class="field"><label for="number">Choisir un numéro</label><div class="line"><input id="number" type="number" min="1" placeholder="N°"><button id="choose" type="button" class="secondary">Afficher</button></div></div>
+<div class="field"><label for="keywords">Rechercher par mots-clés</label><div class="line"><select id="keywords"><option value="">Choisir un mot-clé</option></select><button id="searchText" type="button" class="secondary">Afficher un texte</button></div></div>
+</div>
+<div class="field" style="margin-top:18px"><label>Choisir par niveau de difficulté</label><div id="difficultyPicker" class="stars"></div></div>
+<p id="selection" class="status" aria-live="polite">Sélection : tous les textes du corpus.</p>
+<div class="field" style="margin-top:18px"><label for="student">Prénom ou pseudonyme (facultatif)</label><input id="student" type="text" maxlength="60" placeholder="Prénom"></div>
+<div class="actions"><button id="prepare" disabled>Préparer le défi</button></div>
+<p id="load" class="muted" role="status">Chargement des textes de Récits…</p>
+</section>
+<section class="panel hidden" id="reading">
+<p id="progress" class="muted"></p><h2 id="readingTitle"></h2>
+<div class="center"><span class="muted">Chronomètre</span><div id="clock">00:00,00</div></div>
+<article id="readingText" aria-live="off"></article>
+<div class="center"><button id="startReading">Démarrer</button><button id="nextChunk" class="hidden">Suite (Espace)</button></div>
+<p id="readingNotice" class="status center" aria-live="polite"></p>
+</section>
+<section class="panel hidden" id="result">
+<h2>Résultats du défi</h2><p id="identity" class="muted"></p>
+<p id="latest" class="result noPrint"></p>
+<table><thead><tr><th>Texte</th><th>Numéro</th><th>Vitesse estimée</th></tr></thead><tbody id="rows"></tbody></table>
+<p id="summary"></p><p id="method" class="muted">Estimation en mots affichés par minute, sans décompte des erreurs de lecture. Il ne s'agit pas d'une mesure normée de fluence (MCLM).</p>
+<div class="actions"><button id="nextText">Texte suivant</button><button id="print" class="secondary">Imprimer mon résultat / enregistrer en PDF</button><button id="restart" class="secondary">Nouveau défi</button></div>
+</section>
+</main><footer>© Fluañs – Pierre Lemétayer – 2026</footer>
+<script>
+const KEYWORDS=["amitié","amour","animaux","art","aventure","courage","cultures du monde","découverte","école","écologie","enfance","enquête","famille","fantastique et magie","forêt","guerre","lecture et livres","liberté","mystère","nature","peur","science-fiction","solidarité","souvenirs et mémoire","sport","théâtre","travail et société","trésor","voyage et exploration"];
+// Classement thématique établi à partir des cinq mots-clés validés pour chaque récit.
+// Chaque entrée correspond au numéro du texte ; plusieurs catégories sont possibles.
+const CATEGORIES_PAR_TEXTE={"1":["courage","théâtre","enfance"],"2":["peur","fantastique et magie","enfance"],"3":["aventure","courage","peur","enfance"],"4":["trésor","aventure","mystère","découverte","enfance"],"5":["cultures du monde","enfance","famille"],"6":["école","courage","solidarité","enfance"],"7":["cultures du monde","nature"],"8":["science-fiction","aventure","courage"],"9":["sport","courage"],"10":["théâtre","famille"],"11":["fantastique et magie","solidarité"],"12":["enquête","mystère","cultures du monde"],"13":["cultures du monde","travail et société"],"14":["cultures du monde","solidarité"],"15":["aventure","nature","voyage et exploration"],"16":["cultures du monde","écologie","nature","liberté"],"17":["guerre","liberté","cultures du monde","courage"],"18":["voyage et exploration","courage","liberté"],"19":["théâtre","amour"],"20":["sport","souvenirs et mémoire"],"21":["famille","souvenirs et mémoire","travail et société"],"22":["forêt","mystère","fantastique et magie","nature","découverte"],"23":["voyage et exploration","aventure","liberté","découverte"],"24":["lecture et livres","mystère","souvenirs et mémoire","découverte"],"25":["sport","nature","courage","aventure"],"26":["nature","voyage et exploration"],"27":["animaux","forêt","peur","courage","enfance"],"28":["amitié","aventure","forêt","mystère","enfance"],"29":["souvenirs et mémoire","travail et société","art"],"30":["famille","souvenirs et mémoire","mystère"],"31":["trésor","famille","souvenirs et mémoire","nature"],"32":["solidarité","travail et société","art"],"33":["lecture et livres","école","solidarité"],"34":["cultures du monde","art"],"35":["amour","cultures du monde","souvenirs et mémoire"],"36":["amour","famille"],"37":["animaux","souvenirs et mémoire","famille"],"38":["écologie","découverte","travail et société"],"39":["travail et société","solidarité"],"40":["sport","solidarité","courage","voyage et exploration"],"41":["travail et société","solidarité"],"42":["enquête","écologie","travail et société"],"43":["science-fiction","guerre"],"44":["fantastique et magie","aventure","courage"],"45":["famille","enfance","solidarité"],"46":["découverte","aventure","cultures du monde","voyage et exploration"],"47":["enquête","travail et société"],"48":["cultures du monde","souvenirs et mémoire","travail et société","art"],"49":["école","enfance","courage"],"50":["théâtre","travail et société","solidarité","art"],"51":["fantastique et magie","mystère","peur"],"52":["travail et société","solidarité"],"53":["animaux","aventure","nature","courage"],"54":["nature","courage","écologie"],"55":["sport","enfance"],"56":["guerre","liberté","courage"],"57":["sport","travail et société","courage"],"58":["sport","solidarité","amitié","enfance"],"59":["enquête","mystère"],"60":["travail et société","solidarité"],"61":["famille","cultures du monde"],"62":["travail et société","solidarité"],"63":["théâtre","souvenirs et mémoire","art"],"64":["souvenirs et mémoire","voyage et exploration"],"65":["animaux","amitié","enfance","solidarité","enquête"]};
+
+const $=id=>document.getElementById(id);
+let corpus=[],count=1,pool=[],selected='Tous les textes',queue=[],position=0,revealed=0,words=[],start=0,frame=0,phase='setup',results=[],ended=false;
+const matchKeyword=(r,k)=>(CATEGORIES_PAR_TEXTE[r.numero]||[]).includes(k);
+function sample(arr,n){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a.slice(0,n)}
+function choose(arr,label){pool=arr;selected=label;document.querySelectorAll('.stars button').forEach(b=>b.classList.remove('active'));$('selection').textContent='Sélection : '+label+' · '+arr.length+' texte(s) disponible(s).';$('prepare').disabled=arr.length<count}
+function renderChoices(){
+$('number').max=Math.max(...corpus.map(x=>x.numero));$('number').placeholder=corpus[0].numero+'–'+corpus[corpus.length-1].numero;
+for(const k of KEYWORDS){const n=corpus.filter(r=>matchKeyword(r,k)).length;if(!n)continue;const o=document.createElement('option');o.value=k;o.textContent=k[0].toUpperCase()+k.slice(1)+' ('+n+')';$('keywords').append(o)}
+for(let n=1;n<=12;n++){const available=corpus.filter(r=>r.etoiles===n);const b=document.createElement('button');b.type='button';b.textContent='★';b.title=n+' étoile'+(n>1?'s':'')+' : '+available.length+' texte(s) disponible(s)';b.setAttribute('aria-label',b.title);b.disabled=!available.length;b.onclick=()=>{choose(available,'Difficulté '+n+'/12');b.classList.add('active')};$('difficultyPicker').append(b)}
+choose(corpus,'Tous les textes');$('load').textContent=corpus.length+' textes chargés depuis Récits.'
+}
+document.querySelectorAll('#challenge button').forEach(b=>b.onclick=()=>{count=Number(b.dataset.count);document.querySelectorAll('#challenge button').forEach(x=>x.classList.toggle('active',x===b));$('prepare').disabled=pool.length<count;if(pool.length<count)$('selection').textContent='Sélection : '+selected+' · seulement '+pool.length+' texte(s) disponible(s) pour un défi de '+count+'.'});
+$('random').onclick=()=>choose(corpus,'Tous les textes (au hasard)');
+$('choose').onclick=()=>{const n=Number($('number').value),r=corpus.find(x=>x.numero===n);if(!r){$('selection').textContent='Ce numéro ne correspond à aucun texte.';return}choose([r],'Texte n° '+n)};
+$('searchText').onclick=()=>{const k=$('keywords').value;if(!k){$('selection').textContent='Choisis un mot-clé.';return}choose(corpus.filter(r=>matchKeyword(r,k)),'Mot-clé : '+k)};
+function showSection(id){['setup','reading','result'].forEach(x=>$(x).classList.toggle('hidden',x!==id))}
+function tokenize(s){return [...s.matchAll(/\S+/g)].map(m=>({value:m[0],start:m.index,end:m.index+m[0].length}))}
+function reveal(){if(phase!=='running')return;revealed=Math.min(words.length,revealed+10);const w=words[revealed-1];$('readingText').textContent=queue[position].texte.slice(0,w.end);if(revealed>=words.length){finish('Texte terminé avant une minute.')} }
+function tick(){if(phase!=='running')return;const elapsed=Math.min(60000,performance.now()-start),cs=Math.floor(elapsed/10);$('clock').textContent='00:'+String(Math.floor(cs/100)).padStart(2,'0')+','+String(cs%100).padStart(2,'0');if(elapsed>=60000){finish('Une minute écoulée.');return}frame=requestAnimationFrame(tick)}
+function startReading(){if(phase!=='ready')return;phase='running';start=performance.now();$('startReading').classList.add('hidden');$('nextChunk').classList.remove('hidden');$('readingNotice').textContent='Appuie sur Espace ou sur Suite pour afficher dix mots supplémentaires.';reveal();tick()}
+function prepareText(){phase='ready';revealed=0;const r=queue[position];words=tokenize(r.texte);$('progress').textContent='Texte '+(position+1)+' sur '+count+' · Difficulté '+(r.etoiles||'?')+'/12';$('readingTitle').textContent=r.titre;$('readingText').textContent='';$('clock').textContent='00:00,00';$('startReading').classList.remove('hidden');$('nextChunk').classList.add('hidden');$('readingNotice').textContent='Le chronomètre et les dix premiers mots apparaîtront au démarrage.';showSection('reading')}
+function finish(reason){if(phase!=='running')return;phase='finished';cancelAnimationFrame(frame);$('clock').textContent=reason.startsWith('Une minute')?'01:00,00':$('clock').textContent;const r=queue[position];results.push({title:r.titre,number:r.numero,score:revealed,reason});$('readingText').textContent='';$('nextChunk').classList.add('hidden');renderResults()}
+function renderResults(){showSection('result');$('identity').textContent=($('student').value.trim()?$('student').value.trim()+' · ':'')+new Date().toLocaleDateString('fr-FR')+' · Défi de '+count+' texte(s) · '+selected;$('latest').textContent=results.at(-1).reason+' Vitesse estimée : '+results.at(-1).score+' mots/min.';$('rows').replaceChildren();for(const r of results){const tr=document.createElement('tr');for(const v of [r.title,r.number,r.score+' mots/min']){const td=document.createElement('td');td.textContent=v;tr.append(td)}$('rows').append(tr)}const total=results.reduce((a,b)=>a+b.score,0);$('summary').textContent='Textes terminés : '+results.length+'/'+count+' · Moyenne : '+(total/results.length).toFixed(1).replace('.',',')+' mots/min · Meilleur résultat : '+Math.max(...results.map(r=>r.score))+' mots/min';$('nextText').classList.toggle('hidden',results.length>=count);$('print').disabled=results.length<count}
+$('prepare').onclick=()=>{if(pool.length<count)return;queue=sample(pool,count);position=0;results=[];prepareText()};
+$('startReading').onclick=startReading;$('nextChunk').onclick=reveal;
+document.addEventListener('keydown',e=>{if(e.code!=='Space'||phase!=='running')return;e.preventDefault();if(e.repeat)return;reveal()});
+$('nextText').onclick=()=>{if(results.length>=count)return;position++;prepareText()};
+$('print').onclick=()=>window.print();
+$('restart').onclick=()=>{if(phase==='running'&&!confirm('Abandonner le défi en cours ?'))return;cancelAnimationFrame(frame);phase='setup';results=[];showSection('setup')};
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&phase==='running'){finish('Lecture interrompue : onglet quitté.')}});
+fetch('https://pierreewenlemetayer-dev.github.io/recits/corpus.json').then(r=>{if(!r.ok)throw Error('Corpus indisponible');return r.json()}).then(data=>{if(!Array.isArray(data))throw Error('Corpus invalide');corpus=data.filter(r=>Number.isInteger(r.numero)&&typeof r.texte==='string'&&r.texte.trim()).sort((a,b)=>a.numero-b.numero);renderChoices()}).catch(e=>{$('load').textContent='Impossible de charger les textes : '+e.message;});
+</script></body></html>
