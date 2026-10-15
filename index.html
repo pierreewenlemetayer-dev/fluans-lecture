@@ -12,8 +12,8 @@ h2{font-size:1.15rem;color:var(--dark);margin:0 0 16px}.line{display:flex;flex-w
 input[type=number]{width:110px}input[type=text]{max-width:280px}button{cursor:pointer;background:var(--accent);color:white;border-color:var(--accent);font-weight:bold}button:hover:not(:disabled){background:var(--dark)}button:disabled{opacity:.45;cursor:default}
 button.secondary{background:white;color:var(--dark)}button.secondary:hover:not(:disabled){background:var(--light)}
 .challenge button.active,.stars button.active{background:var(--dark);color:white}
-.challenge{display:flex;gap:9px;flex-wrap:wrap}.challenge button{min-width:65px}
-.stars{display:flex;flex-wrap:wrap;gap:2px}.stars button{background:transparent;border:0;color:#c29224;font-size:1.9rem;padding:1px 5px}
+.setupTop{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:start;gap:14px}.challengeArea{grid-column:2;text-align:center}.challenge{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}.challenge button{min-width:65px}
+.stars{display:flex;flex-wrap:wrap;gap:1px;justify-content:center}.stars button{font-size:1.4rem!important;padding:1px 3px!important}.line{justify-content:center}#setup>h2{text-align:center}.stars button{background:transparent;border:0;color:#c29224;font-size:1.9rem;padding:1px 5px}
 .stars button:hover:not(:disabled){background:var(--light);color:#986c0e}.stars button.active{border-radius:6px}
 .muted{color:#60777a;font-size:.87rem}.status{min-height:22px;margin:14px 0 0;color:var(--dark)}
 .hidden{display:none!important}.center{text-align:center}
@@ -23,14 +23,14 @@ button.secondary{background:white;color:var(--dark)}button.secondary:hover:not(:
 .result{font-size:1.3rem;color:var(--dark)}table{border-collapse:collapse;width:100%;margin:16px 0}th,td{border-bottom:1px solid var(--border);padding:11px;text-align:left}th{color:var(--dark)}
 .actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:22px}
 footer{text-align:center;color:#60777a;font-size:.8rem;padding:20px}
-@media(max-width:650px){.panel{padding:15px}#readingText{font-size:1.12rem}.line{gap:12px}}
+@media(max-width:650px){.setupTop{grid-template-columns:1fr}.challengeArea{grid-column:auto}.panel{padding:15px}#readingText{font-size:1.12rem}.line{gap:12px}}
 @page{size:A4;margin:16mm}
 @media print{header,footer,#setup,#reading,#result .actions,.noPrint{display:none!important}body{background:white}main{padding:0}#result{display:block!important;box-shadow:none;border:0;padding:0}h2{font-size:16pt}table{font-size:10pt}th,td{padding:8px}}
 </style></head><body>
 <header><h1>Fluañs</h1><p class="subtitle">Mesurer et travailler sa vitesse de lecture</p></header>
 <main>
 <section class="panel" id="setup">
-<h2>Choisir un défi</h2><div class="challenge" id="challenge"><button type="button" data-count="1" class="active">1 texte</button><button type="button" data-count="3" >3 textes</button><button type="button" data-count="5" >5 textes</button><button type="button" data-count="10" >10 textes</button></div>
+<div class="setupTop"><div class="field"><label for="student">Nom / prénom (facultatif)</label><input id="student" type="text" maxlength="60" placeholder="Nom / prénom"></div><div class="challengeArea"><h2>Choisir un défi</h2><div class="challenge" id="challenge"><button type="button" data-count="1" class="active">1 texte</button><button type="button" data-count="3" >3 textes</button><button type="button" data-count="5" >5 textes</button></div></div>
 <p class="muted">Chaque texte est lu pendant une minute. Les mots apparaissent par groupes de dix.</p>
 <h2>Choisir les textes</h2>
 <div class="line">
@@ -39,9 +39,8 @@ footer{text-align:center;color:#60777a;font-size:.8rem;padding:20px}
 <div class="field"><label for="keywords">Rechercher par mots-clés</label><div class="line"><select id="keywords"><option value="">Choisir un mot-clé</option></select><button id="searchText" type="button" class="secondary">Afficher un texte</button></div></div>
 </div>
 <div class="field" style="margin-top:18px"><label>Choisir par niveau de difficulté</label><div id="difficultyPicker" class="stars"></div></div>
-<p id="selection" class="status" aria-live="polite">Sélection : tous les textes du corpus.</p>
-<div class="field" style="margin-top:18px"><label for="student">Prénom ou pseudonyme (facultatif)</label><input id="student" type="text" maxlength="60" placeholder="Prénom"></div>
-<div class="actions"><button id="prepare" disabled>Préparer le défi</button></div>
+<p id="selection" class="status hidden" aria-live="polite"></p>
+<div class="actions"><button id="prepare" disabled>Démarrer</button></div>
 <p id="load" class="muted" role="status">Chargement des textes de Récits…</p>
 </section>
 <section class="panel hidden" id="reading">
@@ -69,7 +68,7 @@ const $=id=>document.getElementById(id);
 let corpus=[],count=1,pool=[],selected='Tous les textes',queue=[],position=0,revealed=0,words=[],start=0,frame=0,phase='setup',results=[],ended=false;
 const matchKeyword=(r,k)=>(CATEGORIES_PAR_TEXTE[r.numero]||[]).includes(k);
 function sample(arr,n){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a.slice(0,n)}
-function choose(arr,label){pool=arr;selected=label;document.querySelectorAll('.stars button').forEach(b=>b.classList.remove('active'));$('selection').textContent='Sélection : '+label+' · '+arr.length+' texte(s) disponible(s).';$('prepare').disabled=arr.length<count}
+function choose(arr,label){pool=arr;selected=label;document.querySelectorAll('.stars button').forEach(b=>b.classList.remove('active'));$('prepare').disabled=arr.length<count}
 function renderChoices(){
 $('number').max=Math.max(...corpus.map(x=>x.numero));$('number').placeholder=corpus[0].numero+'–'+corpus[corpus.length-1].numero;
 for(const k of KEYWORDS){const n=corpus.filter(r=>matchKeyword(r,k)).length;if(!n)continue;const o=document.createElement('option');o.value=k;o.textContent=k[0].toUpperCase()+k.slice(1)+' ('+n+')';$('keywords').append(o)}
@@ -78,8 +77,8 @@ choose(corpus,'Tous les textes');$('load').textContent=corpus.length+' textes ch
 }
 document.querySelectorAll('#challenge button').forEach(b=>b.onclick=()=>{count=Number(b.dataset.count);document.querySelectorAll('#challenge button').forEach(x=>x.classList.toggle('active',x===b));$('prepare').disabled=pool.length<count;if(pool.length<count)$('selection').textContent='Sélection : '+selected+' · seulement '+pool.length+' texte(s) disponible(s) pour un défi de '+count+'.'});
 $('random').onclick=()=>choose(corpus,'Tous les textes (au hasard)');
-$('choose').onclick=()=>{const n=Number($('number').value),r=corpus.find(x=>x.numero===n);if(!r){$('selection').textContent='Ce numéro ne correspond à aucun texte.';return}choose([r],'Texte n° '+n)};
-$('searchText').onclick=()=>{const k=$('keywords').value;if(!k){$('selection').textContent='Choisis un mot-clé.';return}choose(corpus.filter(r=>matchKeyword(r,k)),'Mot-clé : '+k)};
+$('choose').onclick=()=>{const n=Number($('number').value),r=corpus.find(x=>x.numero===n);if(!r){alert('Ce numéro ne correspond à aucun texte.');return}choose([r],'Texte n° '+n)};
+$('searchText').onclick=()=>{const k=$('keywords').value;if(!k){alert('Choisis un mot-clé.');return}choose(corpus.filter(r=>matchKeyword(r,k)),'Mot-clé : '+k)};
 function showSection(id){['setup','reading','result'].forEach(x=>$(x).classList.toggle('hidden',x!==id))}
 function tokenize(s){return [...s.matchAll(/\S+/g)].map(m=>({value:m[0],start:m.index,end:m.index+m[0].length}))}
 function reveal(){if(phase!=='running')return;revealed=Math.min(words.length,revealed+10);const w=words[revealed-1];$('readingText').textContent=queue[position].texte.slice(0,w.end);if(revealed>=words.length){finish('Texte terminé avant une minute.')} }
