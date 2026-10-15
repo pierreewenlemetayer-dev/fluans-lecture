@@ -26,6 +26,7 @@ button.secondary{background:white;color:var(--dark)}button.secondary:hover:not(:
 @media(max-width:650px){#readingText{height:clamp(245px,43vh,350px);padding:14px 16px}.setupTop{grid-template-columns:1fr}.challengeArea{grid-column:auto}.panel{padding:15px}#readingText{font-size:1.12rem}.line{gap:12px}}
 @page{size:A4;margin:16mm}
 @media print{header,footer,.related,#setup,#reading,#result .actions,.noPrint{display:none!important}body{background:white}main{padding:0}#result{display:block!important;box-shadow:none;border:0;padding:0}h2{font-size:16pt}table{font-size:10pt}th,td{padding:8px}}
+.readingControls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;margin-top:8px}.readingTimer{grid-column:1;justify-self:end;text-align:center}.readingButtons{grid-column:2;display:flex;justify-content:center}.readingControls #clock{font-size:1.45rem}.readingControls #startReading,.readingControls #nextChunk{padding:12px 28px}.readingControls #nextChunk{min-width:150px}#readingText{height:clamp(220px,38vh,340px);margin:12px auto;overscroll-behavior:auto}@media(max-width:650px){#readingText{height:clamp(200px,36vh,300px)}.readingControls{grid-template-columns:1fr auto 1fr;gap:8px}.readingTimer{justify-self:center}.readingControls #clock{font-size:1.15rem}.readingControls #startReading,.readingControls #nextChunk{font-size:1rem;padding:11px 15px;min-width:0}}
 </style></head><body>
 <header><h1>Fluañs</h1><p class="subtitle">Mesurer et travailler sa vitesse de lecture</p></header>
 <main>
@@ -37,9 +38,8 @@ button.secondary{background:white;color:var(--dark)}button.secondary:hover:not(:
 </section>
 <section class="panel hidden" id="reading">
 <p id="progress" class="muted"></p><h2 id="readingTitle"></h2>
-<div class="center"><span class="muted">Chronomètre</span><div id="clock">00:00,00</div></div>
 <article id="readingText" aria-live="off"></article>
-<div class="center"><button id="startReading">Démarrer</button><button id="nextChunk" class="hidden">Suite</button></div>
+<div class="readingControls"><div class="readingTimer"><span class="muted">Chronomètre</span><div id="clock">00:00,00</div></div><div class="readingButtons"><button id="startReading">Démarrer</button><button id="nextChunk" class="hidden">Suite</button></div></div>
 <p id="readingNotice" class="status center" aria-live="polite"></p>
 </section>
 <section class="panel hidden" id="result">
