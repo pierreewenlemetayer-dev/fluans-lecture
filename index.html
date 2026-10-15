@@ -2,27 +2,27 @@
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Fluañs – Mesurer et travailler sa vitesse de lecture</title>
 <style>
-:root{--accent:#168c91;--dark:#11676c;--light:#e9f7f6;--border:#c6e1df;--text:#24383a}*{box-sizing:border-box}
-body{margin:0;background:#f5f9f9;color:var(--text);font:16px Verdana,Arial,sans-serif}
+:root{--accent:#9a741b;--dark:#765712;--light:#fff7de;--border:#ebddad;--text:#383325}*{box-sizing:border-box}
+body{margin:0;background:#fffcf4;color:var(--text);font:16px Verdana,Arial,sans-serif}
 header{text-align:center;padding:32px 15px 20px}h1{font:700 clamp(3rem,7vw,4.5rem) Georgia,serif;color:var(--dark);margin:0}
-.subtitle{font:italic 1.2rem Georgia,serif;color:#527477;margin:7px 0}main{max-width:1040px;margin:auto;padding:10px 16px 40px}
+.subtitle{font:italic 1.2rem Georgia,serif;color:#937c4c;margin:7px 0}main{max-width:1040px;margin:auto;padding:10px 16px 40px}
 .panel{background:white;border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:20px;box-shadow:0 2px 12px #12595b0b}
 h2{font-size:1.15rem;color:var(--dark);margin:0 0 16px}.line{display:flex;flex-wrap:wrap;align-items:end;gap:16px}
-.field{display:grid;gap:7px;min-width:130px}label{font-size:.9rem;color:#476669}select,input,button{font:inherit;border-radius:8px;padding:11px;border:1px solid #a6c9c7}
+.field{display:grid;gap:7px;min-width:130px}label{font-size:.9rem;color:#756b52}select,input,button{font:inherit;border-radius:8px;padding:11px;border:1px solid #d6c28e}
 input[type=number]{width:110px}input[type=text]{max-width:280px}button{cursor:pointer;background:var(--accent);color:white;border-color:var(--accent);font-weight:bold}button:hover:not(:disabled){background:var(--dark)}button:disabled{opacity:.45;cursor:default}
 button.secondary{background:white;color:var(--dark)}button.secondary:hover:not(:disabled){background:var(--light)}
 .challenge button.active,.stars button.active{background:var(--dark);color:white}
 .setupTop{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:start;gap:14px}.challengeArea{grid-column:2;text-align:center}.setupTop>.field{align-self:end}.challenge{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}.challenge button{min-width:65px}
-.difficultyArea{text-align:center;margin-top:28px}.difficultyArea h2{text-align:center}.stars{display:flex;flex-wrap:wrap;gap:1px;justify-content:center}.stars button{font-size:1.4rem!important;padding:1px 3px!important}.line{justify-content:center}#setup>h2{text-align:center}.stars button{background:transparent;border:0;color:#c29224;font-size:1.9rem;padding:1px 5px}
+.difficultyArea{text-align:center;margin-top:28px}.difficultyArea h2{text-align:center}.stars{display:flex;flex-wrap:wrap;gap:1px;justify-content:center}.stars button{font-size:1.4rem!important;padding:1px 3px!important}.line{justify-content:center}#setup>h2{text-align:center}.stars button{background:transparent;border:0;color:#b48b29;font-size:1.9rem;padding:1px 5px}
 .stars button:hover:not(:disabled){background:var(--light);color:#986c0e}.stars button.active{border-radius:6px}
-.muted{color:#60777a;font-size:.87rem}.status{min-height:22px;margin:14px 0 0;color:var(--dark)}
+.muted{color:#786f59;font-size:.87rem}.status{min-height:22px;margin:14px 0 0;color:var(--dark)}
 .hidden{display:none!important}.center{text-align:center}
 #clock{font-size:1.8rem;font-weight:bold;font-variant-numeric:tabular-nums;color:var(--dark)}
-#readingText{white-space:pre-wrap;line-height:1.75;font-size:1.3rem;height:clamp(270px,47vh,390px);overflow-y:auto;overscroll-behavior:contain;text-align:left;margin:16px auto;max-width:850px;padding:18px 24px;background:#fbfefe;border:1px solid var(--border);border-radius:12px;scroll-behavior:smooth}
+#readingText{white-space:pre-wrap;line-height:1.75;font-size:1.3rem;height:clamp(270px,47vh,390px);overflow-y:auto;overscroll-behavior:contain;text-align:left;margin:16px auto;max-width:850px;padding:18px 24px;background:#fffdf7;border:1px solid var(--border);border-radius:12px;scroll-behavior:smooth}
 #nextChunk{font-size:1.2rem;min-width:170px;padding:16px 25px}#startReading{font-size:1.2rem;padding:15px 32px}
 .result{font-size:1.3rem;color:var(--dark)}table{border-collapse:collapse;width:100%;margin:16px 0}th,td{border-bottom:1px solid var(--border);padding:11px;text-align:left}th{color:var(--dark)}
 .actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:22px}
-.related{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:12px 0 4px}.related a{display:inline-block;text-decoration:none;border:1px solid var(--border);background:var(--light);color:var(--dark);padding:12px 18px;border-radius:9px;font-weight:bold;font-size:.88rem}.related a:hover{border-color:var(--accent);background:#d9f1ef}footer{text-align:center;color:#60777a;font-size:.8rem;padding:20px}
+.related{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:12px 0 4px}.related a{display:inline-block;text-decoration:none;border:1px solid var(--border);background:var(--light);color:var(--dark);padding:12px 18px;border-radius:9px;font-weight:bold;font-size:.88rem}.related a:hover{border-color:var(--accent);background:#fff0bf}footer{text-align:center;color:#60777a;font-size:.8rem;padding:20px}
 @media(max-width:650px){#readingText{height:clamp(245px,43vh,350px);padding:14px 16px}.setupTop{grid-template-columns:1fr}.challengeArea{grid-column:auto}.panel{padding:15px}#readingText{font-size:1.12rem}.line{gap:12px}}
 @page{size:A4;margin:16mm}
 @media print{header,footer,.related,#setup,#reading,#result .actions,.noPrint{display:none!important}body{background:white}main{padding:0}#result{display:block!important;box-shadow:none;border:0;padding:0}h2{font-size:16pt}table{font-size:10pt}th,td{padding:8px}}
