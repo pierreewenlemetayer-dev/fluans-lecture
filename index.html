@@ -22,10 +22,10 @@ button.secondary{background:white;color:var(--dark)}button.secondary:hover:not(:
 #nextChunk{font-size:1.2rem;min-width:170px;padding:16px 25px}#startReading{font-size:1.2rem;padding:15px 32px}
 .result{font-size:1.3rem;color:var(--dark)}table{border-collapse:collapse;width:100%;margin:16px 0}th,td{border-bottom:1px solid var(--border);padding:11px;text-align:left}th{color:var(--dark)}
 .actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:22px}
-footer{text-align:center;color:#60777a;font-size:.8rem;padding:20px}
+.related{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:12px 0 4px}.related a{display:inline-block;text-decoration:none;border:1px solid var(--border);background:var(--light);color:var(--dark);padding:12px 18px;border-radius:9px;font-weight:bold;font-size:.88rem}.related a:hover{border-color:var(--accent);background:#d9f1ef}footer{text-align:center;color:#60777a;font-size:.8rem;padding:20px}
 @media(max-width:650px){#readingText{height:clamp(245px,43vh,350px);padding:14px 16px}.setupTop{grid-template-columns:1fr}.challengeArea{grid-column:auto}.panel{padding:15px}#readingText{font-size:1.12rem}.line{gap:12px}}
 @page{size:A4;margin:16mm}
-@media print{header,footer,#setup,#reading,#result .actions,.noPrint{display:none!important}body{background:white}main{padding:0}#result{display:block!important;box-shadow:none;border:0;padding:0}h2{font-size:16pt}table{font-size:10pt}th,td{padding:8px}}
+@media print{header,footer,.related,#setup,#reading,#result .actions,.noPrint{display:none!important}body{background:white}main{padding:0}#result{display:block!important;box-shadow:none;border:0;padding:0}h2{font-size:16pt}table{font-size:10pt}th,td{padding:8px}}
 </style></head><body>
 <header><h1>Fluañs</h1><p class="subtitle">Mesurer et travailler sa vitesse de lecture</p></header>
 <main>
@@ -49,7 +49,7 @@ footer{text-align:center;color:#60777a;font-size:.8rem;padding:20px}
 <p id="summary"></p><p id="method" class="muted">Estimation en mots affichés par minute, sans décompte des erreurs de lecture. Il ne s'agit pas d'une mesure normée de fluence (MCLM).</p>
 <div class="actions"><button id="nextText">Texte suivant</button><button id="print" class="secondary">Imprimer mon résultat / enregistrer en PDF</button><button id="restart" class="secondary">Nouveau défi</button></div>
 </section>
-</main><footer>© Fluañs – Pierre Lemétayer – 2026</footer>
+<nav class="related" aria-label="Autres outils de lecture"><a href="https://pierreewenlemetayer-dev.github.io/fluans/" target="_blank" rel="noopener noreferrer">Prim – Améliorer sa vitesse de lecture</a><a href="https://pierreewenlemetayer-dev.github.io/recits/" target="_blank" rel="noopener noreferrer">Récits – Lire et comprendre</a></nav></main><footer>© Fluañs – Pierre Lemétayer – 2026</footer>
 <script>
 const KEYWORDS=["amitié","amour","animaux","art","aventure","courage","cultures du monde","découverte","école","écologie","enfance","enquête","famille","fantastique et magie","forêt","guerre","lecture et livres","liberté","mystère","nature","peur","science-fiction","solidarité","souvenirs et mémoire","sport","théâtre","travail et société","trésor","voyage et exploration"];
 // Classement thématique établi à partir des cinq mots-clés validés pour chaque récit.
