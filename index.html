@@ -13,7 +13,7 @@ input[type=number]{width:110px}input[type=text]{max-width:280px}button{cursor:po
 button.secondary{background:white;color:var(--dark)}button.secondary:hover:not(:disabled){background:var(--light)}
 .challenge button.active,.stars button.active{background:var(--dark);color:white}
 .setupTop{display:grid;grid-template-columns:1fr 1fr 1fr;align-items:start;gap:14px}.challengeArea{grid-column:2;text-align:center}.challenge{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}.challenge button{min-width:65px}
-.stars{display:flex;flex-wrap:wrap;gap:1px;justify-content:center}.stars button{font-size:1.4rem!important;padding:1px 3px!important}.line{justify-content:center}#setup>h2{text-align:center}.stars button{background:transparent;border:0;color:#c29224;font-size:1.9rem;padding:1px 5px}
+.difficultyArea{text-align:center;margin-top:28px}.difficultyArea h2{text-align:center}.stars{display:flex;flex-wrap:wrap;gap:1px;justify-content:center}.stars button{font-size:1.4rem!important;padding:1px 3px!important}.line{justify-content:center}#setup>h2{text-align:center}.stars button{background:transparent;border:0;color:#c29224;font-size:1.9rem;padding:1px 5px}
 .stars button:hover:not(:disabled){background:var(--light);color:#986c0e}.stars button.active{border-radius:6px}
 .muted{color:#60777a;font-size:.87rem}.status{min-height:22px;margin:14px 0 0;color:var(--dark)}
 .hidden{display:none!important}.center{text-align:center}
@@ -31,23 +31,15 @@ footer{text-align:center;color:#60777a;font-size:.8rem;padding:20px}
 <main>
 <section class="panel" id="setup">
 <div class="setupTop"><div class="field"><label for="student">Nom / prénom (facultatif)</label><input id="student" type="text" maxlength="60" placeholder="Nom / prénom"></div><div class="challengeArea"><h2>Choisir un défi</h2><div class="challenge" id="challenge"><button type="button" data-count="1" class="active">1 texte</button><button type="button" data-count="3" >3 textes</button><button type="button" data-count="5" >5 textes</button></div></div></div>
-<p class="muted">Chaque texte est lu pendant une minute. Les mots apparaissent par groupes de dix.</p>
-<h2>Choisir les textes</h2>
-<div class="line">
-<div class="field"><label>Découvrir un texte</label><button id="random" type="button" class="secondary">Texte au hasard</button></div>
-<div class="field"><label for="number">Choisir un numéro</label><div class="line"><input id="number" type="number" min="1" placeholder="N°"><button id="choose" type="button" class="secondary">Afficher</button></div></div>
-<div class="field"><label for="keywords">Rechercher par mots-clés</label><div class="line"><select id="keywords"><option value="">Choisir un mot-clé</option></select><button id="searchText" type="button" class="secondary">Afficher un texte</button></div></div>
-</div>
-<div class="field" style="margin-top:18px"><label>Choisir par niveau de difficulté</label><div id="difficultyPicker" class="stars"></div></div>
-<p id="selection" class="status hidden" aria-live="polite"></p>
+<div class="difficultyArea"><h2>Choisir la difficulté des textes</h2><div id="difficultyPicker" class="stars" role="group" aria-label="Choisir la difficulté des textes"></div></div>
 <div class="actions"><button id="prepare" disabled>Démarrer</button></div>
-<p id="load" class="muted" role="status">Chargement des textes de Récits…</p>
+<p id="load" class="muted hidden" role="status" aria-live="polite"></p>
 </section>
 <section class="panel hidden" id="reading">
 <p id="progress" class="muted"></p><h2 id="readingTitle"></h2>
 <div class="center"><span class="muted">Chronomètre</span><div id="clock">00:00,00</div></div>
 <article id="readingText" aria-live="off"></article>
-<div class="center"><button id="startReading">Démarrer</button><button id="nextChunk" class="hidden">Suite (Espace)</button></div>
+<div class="center"><button id="startReading">Démarrer</button><button id="nextChunk" class="hidden">Suite</button></div>
 <p id="readingNotice" class="status center" aria-live="polite"></p>
 </section>
 <section class="panel hidden" id="result">
@@ -70,15 +62,10 @@ const matchKeyword=(r,k)=>(CATEGORIES_PAR_TEXTE[r.numero]||[]).includes(k);
 function sample(arr,n){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a.slice(0,n)}
 function choose(arr,label){pool=arr;selected=label;document.querySelectorAll('.stars button').forEach(b=>b.classList.remove('active'));$('prepare').disabled=arr.length<count}
 function renderChoices(){
-$('number').max=Math.max(...corpus.map(x=>x.numero));$('number').placeholder=corpus[0].numero+'–'+corpus[corpus.length-1].numero;
-for(const k of KEYWORDS){const n=corpus.filter(r=>matchKeyword(r,k)).length;if(!n)continue;const o=document.createElement('option');o.value=k;o.textContent=k[0].toUpperCase()+k.slice(1)+' ('+n+')';$('keywords').append(o)}
-for(let n=1;n<=12;n++){const available=corpus.filter(r=>r.etoiles===n);const b=document.createElement('button');b.type='button';b.textContent='★';b.title=n+' étoile'+(n>1?'s':'')+' : '+available.length+' texte(s) disponible(s)';b.setAttribute('aria-label',b.title);b.disabled=!available.length;b.onclick=()=>{choose(available,'Difficulté '+n+'/12');b.classList.add('active')};$('difficultyPicker').append(b)}
-choose(corpus,'Tous les textes');$('load').textContent=corpus.length+' textes chargés depuis Récits.'
+for(let n=1;n<=12;n++){const available=corpus.filter(r=>r.etoiles===n);const b=document.createElement('button');b.type='button';b.textContent='★';b.title=n+' étoile'+(n>1?'s':'')+' : '+available.length+' texte(s) disponible(s)';b.setAttribute('aria-label',b.title);b.disabled=!available.length;b.onclick=()=>{if(b.classList.contains('active')){choose(corpus,'Tous les textes')}else{choose(available,'Difficulté '+n+'/12');b.classList.add('active')}};$('difficultyPicker').append(b)}
+choose(corpus,'Tous les textes')
 }
-document.querySelectorAll('#challenge button').forEach(b=>b.onclick=()=>{count=Number(b.dataset.count);document.querySelectorAll('#challenge button').forEach(x=>x.classList.toggle('active',x===b));$('prepare').disabled=pool.length<count;if(pool.length<count)$('selection').textContent='Sélection : '+selected+' · seulement '+pool.length+' texte(s) disponible(s) pour un défi de '+count+'.'});
-$('random').onclick=()=>choose(corpus,'Tous les textes (au hasard)');
-$('choose').onclick=()=>{const n=Number($('number').value),r=corpus.find(x=>x.numero===n);if(!r){alert('Ce numéro ne correspond à aucun texte.');return}choose([r],'Texte n° '+n)};
-$('searchText').onclick=()=>{const k=$('keywords').value;if(!k){alert('Choisis un mot-clé.');return}choose(corpus.filter(r=>matchKeyword(r,k)),'Mot-clé : '+k)};
+document.querySelectorAll('#challenge button').forEach(b=>b.onclick=()=>{count=Number(b.dataset.count);document.querySelectorAll('#challenge button').forEach(x=>x.classList.toggle('active',x===b));$('prepare').disabled=pool.length<count});
 function showSection(id){['setup','reading','result'].forEach(x=>$(x).classList.toggle('hidden',x!==id))}
 function tokenize(s){return [...s.matchAll(/\S+/g)].map(m=>({value:m[0],start:m.index,end:m.index+m[0].length}))}
 function reveal(){if(phase!=='running')return;revealed=Math.min(words.length,revealed+10);const w=words[revealed-1];$('readingText').textContent=queue[position].texte.slice(0,w.end);const area=$('readingText');area.scrollTo({top:area.scrollHeight-area.clientHeight,behavior:'smooth'});if(revealed>=words.length){finish('Texte terminé avant une minute.')} }
