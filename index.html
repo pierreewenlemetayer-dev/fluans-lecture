@@ -74,7 +74,7 @@ function sentenceEnds(text){
  const segments=[...new Intl.Segmenter('fr',{granularity:'sentence'}).segment(text)];
  const ends=segments.map(s=>s.index+s.segment.length);
  const boundaries=[];
- for(const end of ends){let n=0;while(n<words.length&&words[n].end<=end)n++;if(n>0&&n>boundaries.at(-1))boundaries.push(n)}
+ for(const end of ends){let n=0;while(n<words.length&&words[n].end<=end)n++;if(n>0&&(boundaries.length===0||n>boundaries[boundaries.length-1]))boundaries.push(n)}
  if(boundaries.at(-1)!==words.length)boundaries.push(words.length);
  return boundaries;
 }
